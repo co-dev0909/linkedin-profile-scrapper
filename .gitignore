@@ -27,7 +27,7 @@ share/python-wheels/
 MANIFEST
 
 *.pkl
-*.txt
+profile_links*.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
