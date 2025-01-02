@@ -1,13 +1,4 @@
 from scraper import linkedin_login
-from CONSTANTS import (
-    EMAIL,
-    PASSWORD
-)
 
-cred = {
-    "email": EMAIL,
-    "password": PASSWORD,
-}
-
-login_response = linkedin_login(cred)
+login_response = linkedin_login()
 print(login_response)

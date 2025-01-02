@@ -35,7 +35,7 @@ class PersonSearchScrap(Scraper):
             self.driver = self.initialize(proxy=proxy)
 
         if scrape:
-            actions.load_cookies(driver=self.driver)
+            actions.login(driver=self.driver)
             self.scrape()
 
     def scrape(self):

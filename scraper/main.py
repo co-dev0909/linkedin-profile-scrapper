@@ -1,16 +1,11 @@
 from typing import Dict
 
 from selenium.common.exceptions import WebDriverException
-# from .company import Company
-# from .job_search import JobSearch
-# from .jobs import Job
 from .linked_in_login import LoginLinkedin
-# from .person import Person
-# from .search_job import JobSearchScrap
 from .search_person import PersonSearchScrap
 
 
-def linkedin_login(data: Dict) -> Dict:
+def linkedin_login(data=None) -> Dict:
     """
     linkedin login by credentials
     Args:
@@ -22,13 +17,11 @@ def linkedin_login(data: Dict) -> Dict:
     Returns:
         result in dictionary
     """
+    if data is None:
+        data = {}
     try:
-        if "email" not in data or "password" not in data:
-            return {"Response": "Missing email or password", "StatusCode": 400}
-        email = data.get('email')
-        password = data.get("password")
         login = LoginLinkedin(proxy=data.get('proxy', ''))
-        response = login.login(email=email, password=password)
+        response = login.login()
         if response:
             return {"Response": "Success", "StatusCode": 200}
         return {"Response": "Invalid Username Password", "StatusCode": 401}
