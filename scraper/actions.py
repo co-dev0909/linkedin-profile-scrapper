@@ -56,7 +56,7 @@ def linkedin_login(driver, email="", password="", timeout=10):
     if not email:
         email = input("Enter Email: ")
     if not password:
-        password = input("Enter Password: ")
+        password = getpass.getpass(prompt="Enter Password: ")
     try:
         email_elem = driver.find_element(By.ID, "username")
         email_elem.send_keys(email)
