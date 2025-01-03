@@ -30,7 +30,7 @@ def page_has_loaded(driver):
 
 def load_cookies(driver, path=""):
     driver.get(BASE_URL)
-    if os.path.isfile(COOKIE_FILE_NAME):
+    if os.path.isfile(path or COOKIE_FILE_NAME):
         with open(path or COOKIE_FILE_NAME, 'rb') as file:
             cookies = pickle.load(file)
             for cookie in cookies:
@@ -94,9 +94,10 @@ def linkedin_login(driver, email="", password="", timeout=10):
 def login(driver, timeout=10):
     paths = list(os.listdir("creds")) if os.path.exists("creds") else None
     if paths:
-        path = random.choice(paths)
+        path = "creds/" + random.choice(paths)
         load_cookies(driver=driver, path=path)
         counter = 0
+        driver.get(f'{BASE_URL}feed/')
         while driver.current_url == f'{BASE_URL}feed/' and counter < 5:
             element = driver.find_elements(By.CLASS_NAME, VERIFY_LOGIN_ID)
             if len(element) > 0:

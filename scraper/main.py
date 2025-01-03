@@ -72,12 +72,12 @@ def search_person_profile_links(data: Dict) -> Dict:
         result in dictionary
     """
     try:
-        j = PersonSearchScrap(proxy=data.get('proxy', ''), linkedin_url=data.get("linkedin_url"))
-        result_data = j.search_profile_links()
+        j = PersonSearchScrap(proxy=data.get('proxy', ''), linkedin_url=data.get("url"), file_name=data.get("name"))
+        result_data, raise_exception = j.search_profile_links()
         if result_data == 404:
             return {"Response": "Page Not Found", "StatusCode": 404, "data": None}
         if result_data == 401:
             return {"Response": "Invalid Username Password", "StatusCode": 401, "data": None}
-        return {"Response": "Success", "StatusCode": 200, "data": result_data}
+        return {"Response": "Success", "StatusCode": 200, "data": result_data, "raise_exception": raise_exception}
     except (Exception, WebDriverException) as e:
         return {"Response": "Something went wrong!", "StatusCode": 400, "error": str(e)}

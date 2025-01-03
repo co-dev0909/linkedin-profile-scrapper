@@ -1,4 +1,5 @@
 import logging
+import os.path
 import uuid
 
 from selenium.webdriver.common.by import By
@@ -21,11 +22,13 @@ class PersonSearchScrap(Scraper):
     def __init__(
             self,
             linkedin_url=None,
+            file_name=None,
             driver=None,
             scrape=True,
             proxy=None
     ):
         self.linkedin_url = linkedin_url
+        self.file_name = file_name
         self.driver = driver
         self.logged_in = False
         self.limit = None
@@ -148,6 +151,7 @@ class PersonSearchScrap(Scraper):
 
         retries = 0
         previous_page = ""
+        raise_exception = None
 
         while True:
             try:
@@ -196,12 +200,15 @@ class PersonSearchScrap(Scraper):
                 previous_page = current_page
             except Exception as e:
                 print(e)
+                raise_exception = True
                 break
 
         total_links = "\n".join([
             item.split("/in/")[-1].split('?')[0]
             for item in total_links
         ])
-        with open(f"profile_links_{uuid.uuid4()}.txt", "w") as file:
+        if not os.path.exists("profiles"):
+            os.mkdir("profiles")
+        with open("profiles/" + (self.file_name or f"profile_links_{uuid.uuid4()}") + ".txt", "w") as file:
             file.write(total_links)
-        return total_links
+        return total_links, raise_exception
