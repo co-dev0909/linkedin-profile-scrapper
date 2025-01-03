@@ -64,11 +64,21 @@ python login.py
 ```
 This script will log into your LinkedIn account. it will require you to enter email and password in the terminal (where you run the program).
 
+#### Prepare input data
+Please create `input.json` file in the project folder and input the data in this format
+```
+[
+  {
+    "name": "first search file name",
+    "url": "https://www.linkedin.com/search/results/people/?keywords=mary"
+  }
+]
+```
 #### Start Scraping:
 ```bash
 python main.py
 ```
-This script will scrape data from the specified LinkedIn URL.
+This script will scrape data by using `input.json` file.
 
 ## Troubleshooting
 - Ensure you have the latest version of Chrome/ChromeDriver
