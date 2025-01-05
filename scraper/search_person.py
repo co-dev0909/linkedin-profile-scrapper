@@ -155,6 +155,8 @@ class PersonSearchScrap(Scraper):
 
         while True:
             try:
+                with open("temp.txt", 'w') as temp_file:
+                    temp_file.write(self.driver.current_url)
                 elements = self.get_elements_by_time(
                     by=By.XPATH,
                     value='//a[contains(@href, "www.linkedin.com/in/")]',
@@ -203,12 +205,27 @@ class PersonSearchScrap(Scraper):
                 raise_exception = True
                 break
 
-        total_links = "\n".join([
-            item.split("/in/")[-1].split('?')[0]
-            for item in total_links
-        ])
         if not os.path.exists("profiles"):
             os.mkdir("profiles")
-        with open("profiles/" + (self.file_name or f"profile_links_{uuid.uuid4()}") + ".txt", "w") as file:
+        file_path = "profiles/" + (self.file_name or f"profile_links_{uuid.uuid4()}") + ".txt"
+
+        try:
+            with open(file_path, 'r') as file:
+                old_data = file.read()
+        except FileNotFoundError:
+            old_data = ""
+        total_links = [
+            item.split("/in/")[-1].split('?')[0]
+            for item in total_links
+        ]
+        total_links.extend(old_data.split('\n'))
+        total_links = list(set(total_links))
+
+        total_links = "\n".join([
+            item
+            for item in total_links
+        ])
+
+        with open(file_path, "w") as file:
             file.write(total_links)
         return total_links, raise_exception

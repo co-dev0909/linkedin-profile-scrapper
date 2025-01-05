@@ -10,6 +10,17 @@ def scrape_current_data(_input_data, tries=3):
         if tries == 0:
             return None
         tries = tries - 1
+        try:
+            with open("temp.txt", 'r') as temp_file:
+                last_url = temp_file.read()
+            if last_url:
+                _input_data.update({
+                    "url": last_url
+                })
+                with open("temp.txt", 'w') as temp_file:
+                    temp_file.write("")
+        except FileNotFoundError:
+            pass
         return scrape_current_data(_input_data, tries)
     else:
         print(data)

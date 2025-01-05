@@ -44,12 +44,15 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### 3. Configure Credentials
-Open the `CONSTANTS.py` file in the main directory and set the following:
-
-```python
-# CONSTANTS.py
-LINKEDIN_URL = "https://www.linkedin.com/search/results/people/..."  # Your specific search URL
+### 3. Prepare input data
+Please create `input.json` file in the project folder and input the data in this format
+```
+[
+  {
+    "name": "first search file name",
+    "url": "https://www.linkedin.com/search/results/people/?keywords=mary"
+  }
+]
 ```
 
 **IMPORTANT:** 
@@ -64,16 +67,6 @@ python login.py
 ```
 This script will log into your LinkedIn account. it will require you to enter email and password in the terminal (where you run the program).
 
-#### Prepare input data
-Please create `input.json` file in the project folder and input the data in this format
-```
-[
-  {
-    "name": "first search file name",
-    "url": "https://www.linkedin.com/search/results/people/?keywords=mary"
-  }
-]
-```
 #### Start Scraping:
 ```bash
 python main.py
