@@ -3,7 +3,7 @@ import os.path
 
 from scraper.main import search_person_profile_links
 
-def scrape_current_data(_input_data, tries=3):
+def scrape_current_data(_input_data, tries=100):
     data = search_person_profile_links(data=_input_data)
     raise_exception = data.get("raise_exception")
     if raise_exception:

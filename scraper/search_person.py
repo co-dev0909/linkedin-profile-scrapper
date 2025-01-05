@@ -219,7 +219,6 @@ class PersonSearchScrap(Scraper):
             for item in total_links
         ]
         total_links.extend(old_data.split('\n'))
-        total_links = list(set(total_links))
 
         total_links = "\n".join([
             item
