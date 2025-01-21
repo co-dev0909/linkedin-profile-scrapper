@@ -53,28 +53,29 @@ def save_cookies(driver, file_name=""):
 
 def linkedin_login(driver, email="", password="", timeout=10):
     driver.get(f"{BASE_URL}login")
-    if not email:
-        email = input("Enter Email: ")
-    if not password:
-        password = getpass.getpass(prompt="Enter Password: ")
-    try:
-        email_elem = driver.find_element(By.ID, "username")
-        email_elem.send_keys(email)
-    except NoSuchElementException:
-        pass
-    except Exception as e:
-        pass
-    password_elem = driver.find_element(By.ID, "password")
-    password_elem.send_keys(password)
-    password_elem.submit()
-    if driver.current_url == f'{BASE_URL}checkpoint/lg/login-submit':
-        remember = driver.find_elements(By.ID, REMEMBER_PROMPT)
-        if remember:
-            remember[0].submit()
-    if "add-phone" in driver.current_url:
-        skip = driver.find_elements(By.XPATH, '//button[@class="secondary-action"]')
-        if skip:
-            action_click(driver=driver, element=skip[0])
+    # if not email:
+    #     email = input("Enter Email: ")
+    # if not password:
+    #     password = getpass.getpass(prompt="Enter Password: ")
+    # try:
+    #     email_elem = driver.find_element(By.ID, "username")
+    #     email_elem.send_keys(email)
+    # except NoSuchElementException:
+    #     pass
+    # except Exception as e:
+    #     pass
+    # password_elem = driver.find_element(By.ID, "password")
+    # password_elem.send_keys(password)
+    # password_elem.submit()
+    # if driver.current_url == f'{BASE_URL}checkpoint/lg/login-submit':
+    #     remember = driver.find_elements(By.ID, REMEMBER_PROMPT)
+    #     if remember:
+    #         remember[0].submit()
+    # if "add-phone" in driver.current_url:
+    #     skip = driver.find_elements(By.XPATH, '//button[@class="secondary-action"]')
+    #     if skip:
+    #         action_click(driver=driver, element=skip[0])\
+    input("Please login manually and then hit enter here")
     counters = 0
     while counters < timeout:
         counters = counters + 1
