@@ -209,6 +209,7 @@ class Scraper:
             options.add_argument("start-maximized")
             driver = webdriver.Chrome(service=Service(), options=options)
             try:
+                self.wait(10)
                 driver.get("https://whatismyipaddress.com/")
                 element = driver.find_element(
                     by=By.XPATH, value='//*[@class="address"]'
