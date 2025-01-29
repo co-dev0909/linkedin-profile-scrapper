@@ -195,7 +195,7 @@ class Scraper:
         self.driver.execute_script('alert("Focus window")')
         self.driver.switch_to.alert.accept()
 
-    def initialize(self, proxy, retries=5):
+    def initialize(self, proxy, retries=100):
         temp = self.driver
         if temp:
             temp.maximize_window()
