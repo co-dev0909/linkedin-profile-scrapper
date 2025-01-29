@@ -4,15 +4,10 @@ import pickle
 import random
 from time import sleep
 
-from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
-from .constants import (
-    VERIFY_LOGIN_ID,
-    COOKIE_FILE_NAME,
-    REMEMBER_PROMPT
-)
+from .constants import VERIFY_LOGIN_ID, COOKIE_FILE_NAME
 
 BASE_URL = "https://www.linkedin.com/"
 
@@ -24,18 +19,18 @@ def __prompt_email_password():
 
 
 def page_has_loaded(driver):
-    page_state = driver.execute_script('return document.readyState;')
-    return page_state == 'complete'
+    page_state = driver.execute_script("return document.readyState;")
+    return page_state == "complete"
 
 
 def load_cookies(driver, path=""):
     driver.get(BASE_URL)
     if os.path.isfile(path or COOKIE_FILE_NAME):
-        with open(path or COOKIE_FILE_NAME, 'rb') as file:
+        with open(path or COOKIE_FILE_NAME, "rb") as file:
             cookies = pickle.load(file)
             for cookie in cookies:
                 driver.add_cookie(cookie)
-            driver.get(f'{BASE_URL}feed/')
+            driver.get(f"{BASE_URL}feed/")
             sleep(2)
 
 
@@ -48,7 +43,9 @@ def action_click(driver, element):
 def save_cookies(driver, file_name=""):
     if not os.path.exists("creds"):
         os.mkdir("creds")
-    pickle.dump(driver.get_cookies(), open(f"creds/{file_name or COOKIE_FILE_NAME}.pkl", 'wb'))
+    pickle.dump(
+        driver.get_cookies(), open(f"creds/{file_name or COOKIE_FILE_NAME}.pkl", "wb")
+    )
 
 
 def linkedin_login(driver, email="", password="", timeout=10):
@@ -98,8 +95,8 @@ def login(driver, timeout=10):
         path = "creds/" + random.choice(paths)
         load_cookies(driver=driver, path=path)
         counter = 0
-        driver.get(f'{BASE_URL}feed/')
-        while driver.current_url == f'{BASE_URL}feed/' and counter < 5:
+        driver.get(f"{BASE_URL}feed/")
+        while driver.current_url == f"{BASE_URL}feed/" and counter < 5:
             element = driver.find_elements(By.CLASS_NAME, VERIFY_LOGIN_ID)
             if len(element) > 0:
                 return

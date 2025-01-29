@@ -20,12 +20,7 @@ class PersonSearchScrap(Scraper):
     keywords = ""
 
     def __init__(
-            self,
-            linkedin_url=None,
-            file_name=None,
-            driver=None,
-            scrape=True,
-            proxy=None
+        self, linkedin_url=None, file_name=None, driver=None, scrape=True, proxy=None
     ):
         self.linkedin_url = linkedin_url
         self.file_name = file_name
@@ -48,13 +43,13 @@ class PersonSearchScrap(Scraper):
             self.logged_in = False
 
     def search(
-            self,
-            first_name: str = "",
-            last_name: str = "",
-            location: str = "",
-            keywords: str = "",
-            company_name: str = "",
-            limit: int = None
+        self,
+        first_name: str = "",
+        last_name: str = "",
+        location: str = "",
+        keywords: str = "",
+        company_name: str = "",
+        limit: int = None,
     ):
         self.company_name = company_name
         self.first_name = first_name
@@ -69,7 +64,6 @@ class PersonSearchScrap(Scraper):
         return 401
 
     def scrape_logged_in(self):
-
         page, persons = 0, []
 
         if self.location:
@@ -78,9 +72,14 @@ class PersonSearchScrap(Scraper):
             self.location = geo_data[0].get("id", "") if len(geo_data) > 0 else ""
 
         if self.company_name:
-            company_data = link_api.get_company_ids_by_name_search(name=self.company_name)
-            company_ids = [comp.get("id", None) for comp in company_data if
-                           comp.get("displayName", None) == self.company_name]
+            company_data = link_api.get_company_ids_by_name_search(
+                name=self.company_name
+            )
+            company_ids = [
+                comp.get("id", None)
+                for comp in company_data
+                if comp.get("displayName", None) == self.company_name
+            ]
             self.company_name = ",".join(company_ids)
 
         while True:
@@ -107,25 +106,21 @@ class PersonSearchScrap(Scraper):
                 by=By.CLASS_NAME,
                 value="reusable-search__result-container",
                 seconds=10,
-                single=False
+                single=False,
             )
             if not li:
                 break
             for item in li:
-
-                link = item.find_elements(By.XPATH, './/a')[-1]
-                name = link.text.split('\n')[0]
+                link = item.find_elements(By.XPATH, ".//a")[-1]
+                name = link.text.split("\n")[0]
                 link = link.get_attribute("href")
 
-                text = item.text.split('\n')[4:-1]
+                text = item.text.split("\n")[4:-1]
                 description = text[0] if len(text) > 0 else ""
                 location = text[1] if len(text) > 1 else ""
                 description = description + "\n" + text[2] if len(text) > 2 else ""
                 p = PersonSearch(
-                    link=link,
-                    name=name,
-                    description=description,
-                    location=location
+                    link=link, name=name, description=description, location=location
                 )
                 persons.append(p)
                 if self.limit and len(persons) >= self.limit:
@@ -155,12 +150,12 @@ class PersonSearchScrap(Scraper):
 
         while True:
             try:
-                with open("temp.txt", 'w') as temp_file:
+                with open("temp.txt", "w") as temp_file:
                     temp_file.write(self.driver.current_url)
                 elements = self.get_elements_by_time(
                     by=By.XPATH,
                     value='//a[contains(@href, "www.linkedin.com/in/")]',
-                    single=False
+                    single=False,
                 )
 
                 if not elements and retries < 3:
@@ -193,8 +188,7 @@ class PersonSearchScrap(Scraper):
                 print(len(total_links))
 
                 current_page = self.get_elements_by_time(
-                    by=By.XPATH,
-                    value='//ul[@role="list"]'
+                    by=By.XPATH, value='//ul[@role="list"]'
                 ).text
 
                 if current_page == previous_page:
@@ -207,23 +201,19 @@ class PersonSearchScrap(Scraper):
 
         if not os.path.exists("profiles"):
             os.mkdir("profiles")
-        file_path = "profiles/" + (self.file_name or f"profile_links_{uuid.uuid4()}") + ".txt"
+        file_path = (
+            "profiles/" + (self.file_name or f"profile_links_{uuid.uuid4()}") + ".txt"
+        )
 
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path, "r") as file:
                 old_data = file.read()
         except FileNotFoundError:
             old_data = ""
-        total_links = [
-            item.split("/in/")[-1].split('?')[0]
-            for item in total_links
-        ]
-        total_links.extend(old_data.split('\n'))
+        total_links = [item.split("/in/")[-1].split("?")[0] for item in total_links]
+        total_links.extend(old_data.split("\n"))
 
-        total_links = "\n".join([
-            item
-            for item in total_links
-        ])
+        total_links = "\n".join([item for item in total_links])
 
         with open(file_path, "w") as file:
             file.write(total_links)

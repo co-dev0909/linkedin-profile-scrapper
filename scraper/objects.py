@@ -8,7 +8,7 @@ from selenium.common import (
     ElementNotInteractableException,
     JavascriptException,
     NoSuchElementException,
-    TimeoutException
+    TimeoutException,
 )
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver import Chrome
@@ -34,7 +34,7 @@ class PersonSearch:
             "link": self.link,
             "name": self.name,
             "description": self.description,
-            "location": self.location
+            "location": self.location,
         }
 
 
@@ -50,7 +50,7 @@ class JobsSearch:
             "job_title": self.job_title,
             "job_link": self.job_link,
             "company_name": self.company_name,
-            "job_location": self.job_location
+            "job_location": self.job_location,
         }
 
 
@@ -74,7 +74,7 @@ class Institution:
             "type": self.type,
             "headquarters": self.headquarters,
             "company_size": self.company_size,
-            "founded": self.founded
+            "founded": self.founded,
         }
 
 
@@ -96,14 +96,14 @@ class Experience(Institution):
                 "description": self.description,
                 "position_title": self.position_title,
                 "duration": self.duration,
-                "location": self.location
+                "location": self.location,
             }
         )
         return result
 
 
 @dataclass
-class Education():
+class Education:
     institution_name: str = None
     linkedin_url: str = None
     from_date: str = None
@@ -118,7 +118,7 @@ class Education():
             "from_date": self.from_date,
             "to_date": self.to_date,
             "description": self.description,
-            "degree": self.degree
+            "degree": self.degree,
         }
 
 
@@ -130,18 +130,11 @@ class InterestTemplate:
     description: str = None
 
     def __repr__(self) -> dict:
-        data = {
-            "name": self.name,
-            "url": self.url
-        }
+        data = {"name": self.name, "url": self.url}
         if self.followers:
-            data.update({
-                "followers": self.followers
-            })
+            data.update({"followers": self.followers})
         if self.description:
-            data.update({
-                "description": self.description
-            })
+            data.update({"description": self.description})
         return data
 
 
@@ -166,7 +159,7 @@ class Interest:
             "schools": [sch.__repr__() for sch in self.schools],
             "top_voices": [top.__repr__() for top in self.top_voices],
             "groups": [grp.__repr__() for grp in self.groups],
-            "news_letters": [let.__repr__() for let in self.news_letters]
+            "news_letters": [let.__repr__() for let in self.news_letters],
         }
 
 
@@ -177,12 +170,7 @@ class Accomplishment(Institution):
 
     def __repr__(self) -> dict:
         result = super().__repr__()
-        result.update(
-            {
-                "category": self.category,
-                "title": self.title
-            }
-        )
+        result.update({"category": self.category, "title": self.title})
         return result
 
 
@@ -196,7 +184,7 @@ class Scraper:
         "This LinkedIn Page isn’t available",
         "This page doesn’t exist",
         "Page not found",
-        "The job you were looking for was not found."
+        "The job you were looking for was not found.",
     ]
 
     @staticmethod
@@ -207,20 +195,31 @@ class Scraper:
         self.driver.execute_script('alert("Focus window")')
         self.driver.switch_to.alert.accept()
 
-    def initialize(self, proxy):
+    def initialize(self, proxy, retries=5):
         temp = self.driver
         if temp:
             temp.maximize_window()
         try:
-
             options = webdriver.ChromeOptions()
             # options.add_argument('--headless')
-            options.add_argument('--disable-gpu')
-            options.add_argument('--disable-notifications')
+            options.add_argument("--disable-gpu")
+            options.add_argument("--disable-notifications")
             if proxy:
                 options.add_argument(f"--proxy-server={proxy}")
-            options.add_argument('start-maximized')
-            return webdriver.Chrome(service=Service(), options=options)
+            options.add_argument("start-maximized")
+            driver = webdriver.Chrome(service=Service(), options=options)
+            try:
+                driver.get("https://whatismyipaddress.com/")
+                element = driver.find_element(
+                    by=By.XPATH, value='//*[@class="address"]'
+                )
+                if element:
+                    return driver
+            except Exception as e:
+                logging.error("Error! creating webdriver", exc_info=e)
+                if retries <= 0:
+                    return Exception(e)
+            return self.initialize(proxy=proxy, retries=retries - 1)
         except Exception as e:
             logging.error("Error! creating webdriver", exc_info=e)
             return webdriver.Chrome()
@@ -257,7 +256,15 @@ class Scraper:
             except (ElementClickInterceptedException, ElementNotInteractableException):
                 pass
 
-    def get_elements_by_time(self, by=By.CLASS_NAME, value='', seconds=5, base=None, single=True, element_count=None):
+    def get_elements_by_time(
+        self,
+        by=By.CLASS_NAME,
+        value="",
+        seconds=5,
+        base=None,
+        single=True,
+        element_count=None,
+    ):
         counter = 0
         if not base:
             base = self.driver
@@ -275,8 +282,10 @@ class Scraper:
             counter = counter + 1
             self.wait(1)
 
-    def get_element_text(self, by=By.CLASS_NAME, value='', seconds=3, base=None):
-        element = self.get_elements_by_time(by=by, value=value, seconds=seconds, base=base)
+    def get_element_text(self, by=By.CLASS_NAME, value="", seconds=3, base=None):
+        element = self.get_elements_by_time(
+            by=by, value=value, seconds=seconds, base=base
+        )
         if element:
             return element.text.strip()
         return ""
@@ -284,23 +293,15 @@ class Scraper:
     def wait_for_element_to_load(self, by=By.CLASS_NAME, name="pv-top-card", base=None):
         base = base or self.driver
         return WebDriverWait(base, self.WAIT_FOR_ELEMENT_TIMEOUT).until(
-            EC.presence_of_element_located(
-                (
-                    by,
-                    name
-                )
-            )
+            EC.presence_of_element_located((by, name))
         )
 
-    def wait_for_all_elements_to_load(self, by=By.CLASS_NAME, name="pv-top-card", base=None):
+    def wait_for_all_elements_to_load(
+        self, by=By.CLASS_NAME, name="pv-top-card", base=None
+    ):
         base = base or self.driver
         return WebDriverWait(base, self.WAIT_FOR_ELEMENT_TIMEOUT).until(
-            EC.presence_of_all_elements_located(
-                (
-                    by,
-                    name
-                )
-            )
+            EC.presence_of_all_elements_located((by, name))
         )
 
     def is_signed_in(self):
@@ -345,9 +346,7 @@ class Scraper:
                     f"my_div.scrollTo(0,0);"
                 )
             else:
-                self.driver.execute_script(
-                    "window.scrollTo(0, 0);"
-                )
+                self.driver.execute_script("window.scrollTo(0, 0);")
         except JavascriptException:
             pass
         except Exception as e:
@@ -360,9 +359,7 @@ class Scraper:
                     f"my_div = document.getElementsByClassName('{class_name}')[0];"
                     f"return my_div.scrollHeight;"
                 )
-            return self.driver.execute_script(
-                "return document.body.scrollHeight;"
-            )
+            return self.driver.execute_script("return document.body.scrollHeight;")
         except JavascriptException:
             pass
         except Exception as e:
@@ -384,10 +381,12 @@ class Scraper:
         except Exception as e:
             logging.warning("Not fount", exc_info=e)
 
-    def scroll_class_name_element_to_page_percent(self, class_name: str, page_percent: float):
+    def scroll_class_name_element_to_page_percent(
+        self, class_name: str, page_percent: float
+    ):
         self.driver.execute_script(
             f'elem = document.getElementsByClassName("{class_name}")[0]; '
-            f'elem.scrollTo(0, elem.scrollHeight*{str(page_percent)});'
+            f"elem.scrollTo(0, elem.scrollHeight*{str(page_percent)});"
         )
 
     def __find_element_by_class_name__(self, class_name):
@@ -424,7 +423,7 @@ class Scraper:
                 return elem[0]
 
     def invalid_link(self):
-        text = self.driver.find_element(By.TAG_NAME, 'body').text
+        text = self.driver.find_element(By.TAG_NAME, "body").text
         for item in self.invalid_text:
             if item in text:
                 return True

@@ -3,7 +3,6 @@ from .objects import Scraper
 
 
 class LoginLinkedin(Scraper):
-
     def __init__(self, proxy=None):
         self.driver = self.initialize(proxy=proxy)
 
