@@ -208,19 +208,8 @@ class Scraper:
                 options.add_argument(f"--proxy-server={proxy}")
             options.add_argument("start-maximized")
             driver = webdriver.Chrome(service=Service(), options=options)
-            try:
-                self.wait(10)
-                driver.get("https://whatismyipaddress.com/")
-                element = driver.find_element(
-                    by=By.XPATH, value='//*[@class="address"]'
-                )
-                if element:
-                    return driver
-            except Exception as e:
-                logging.error("Error! creating webdriver", exc_info=e)
-                if retries <= 0:
-                    return Exception(e)
-            return self.initialize(proxy=proxy, retries=retries - 1)
+            self.wait(5)
+            return driver
         except Exception as e:
             logging.error("Error! creating webdriver", exc_info=e)
             return webdriver.Chrome()
