@@ -2,7 +2,7 @@
 
 ## Clone Project
 ```commandline
-git clone https://github.com/sohail-eng/linkedin-profile-scrapper.git
+git clone https://github.com/co-dev0909/linkedin-profile-scrapper.git
 ```
 
 ## Prerequisites
